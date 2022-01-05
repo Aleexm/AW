@@ -46,22 +46,13 @@ class AwEnv(gym.Env):
         9. Load unit (On move?)
         10. Drop unit NESW
         11. Repair (bb) NESW
-        12. Launch Silo at square
+        12. L x W: Launch Silo at square
         13. Explode BB
         14. Resupply NESW
         15. Use COp
         16. Use SCop
         17. Yield
     '''
-        valid_actions = np.zeros(np.shape(self.battlefield))
-        for row in range(len(self.battlefield)):
-            for col in range(len(self.battlefield[row])):
-                unit = self.battlefield[row][col].unit
-                if unit is None:
-                    continue
-                if unit.country == self.active_player and not unit.moved:
-                    valid_actions[row, col] = 1
-        return valid_actions
 
     def create_unit(self, unit, x, y):
         self.battlefield[x][y].unit = unit

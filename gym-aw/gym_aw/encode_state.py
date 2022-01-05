@@ -56,7 +56,7 @@ def _fill_unit_state(unit, bf, active_player, state):
     if unit is None:
         return
     x, y = unit.x, unit.y
-    encoded_hp = unit.hp / 10
+    encoded_hp = unit.hp / 10 # Units are represented as float (0,1) based on hp
     if unit.country == active_player:
         state[MY_UNIT_IDX + unit.encode_idx, x, y] = encoded_hp
     else:
