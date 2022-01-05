@@ -3,6 +3,7 @@ class Unit():
         self.country = country
         self.moved = False
         self.is_selected = False
+        self.has_finished = False
 
 class Infantry(Unit):
     def __init__(self, country, x, y):

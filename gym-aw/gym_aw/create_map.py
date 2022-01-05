@@ -3,7 +3,7 @@ import random
 from dicts import TERRAIN_DICT
 from terrain import *
 import os
-from consts import TERRAIN_SIZE, SCALER
+from consts import *
 
 def create_battlefield_random(size_x = None, size_y = None, cities = None, bases = None,
                               airports = None, ports = None, comtowers = None):

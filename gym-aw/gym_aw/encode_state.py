@@ -40,9 +40,11 @@ def _fill_terrain_state(terrain, bf, active_player, state):
         if terrain.country == 0:
             state[terrain.type.encode_idx, x, y] = cpt_points
         elif terrain.country == active_player: # My prop
-            state[MY_PROP_IDX + terrain.type.encode_idx, x, y] = cpt_points
+            state[MY_PROP_IDX + (terrain.type.encode_idx - NUM_TERRAINS), x, y] \
+            = cpt_points
         else: # Opp prop
-            state[OPP_PROP_IDX + terrain.type.encode_idx, x, y] = cpt_points
+            state[OPP_PROP_IDX + (terrain.type.encode_idx - NUM_TERRAINS), x, y] \
+            = cpt_points
 
 def _fill_unit_state(unit, bf, active_player, state):
     '''

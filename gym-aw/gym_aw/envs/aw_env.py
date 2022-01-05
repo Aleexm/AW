@@ -52,7 +52,24 @@ class AwEnv(gym.Env):
         15. Use COp
         16. Use SCop
         17. Yield
-    '''
+        '''
+        return self._get_actionable_units()
+
+    def _get_actionable_units(self):
+        actionable = np.zeros(np.shape(self.battlefield))
+        for row in range(len(self.battlefield)):
+            for col in range(len(self.battlefield[row])):
+                unit = self.battlefield[row][col].unit
+                if unit is None:
+                    continue
+                assert not unit.is_selected
+                if unit.country == self.active_player:
+                    if not unit.has_finished:
+                        actionable[row,col] = 1
+        return actionable
+
+    def _get_movable_squares(self):
+        pass
 
     def create_unit(self, unit, x, y):
         self.battlefield[x][y].unit = unit
