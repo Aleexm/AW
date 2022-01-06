@@ -1,6 +1,6 @@
 from dicts import TERRAIN_DICT
 from consts import *
-from weather import Weather
+from enums import Weather
 import enum
 
 class Terrain():
@@ -15,25 +15,10 @@ class Terrain():
             self.capture_points = 20
         else:
             self.capture_points = -1
+        self.movement = self.get_movement()
 
-    def __repr__(self):
-        x_str = str(self.x)
-        if len(x_str) == 1:
-            x_str += ' '
-        y_str = str(self.y)
-        if len(y_str) == 1:
-            y_str += ' '
-        type_str = str(self.type)
-        for i in range(8-len(type_str)):
-            type_str += ' '
-        cpt_string = str(self.capture_points)
-        if len(cpt_string) == 1:
-            cpt_string += ' '
-        country_string = str(self.country)
-        for i in range(2-(len(country_string))):
-            country_string += ' '
-        return '{} {} {} p: {}, c: {}'.format(x_str, y_str, type_str,
-                                              country_string, cpt_string)
+    def get_movement(self):
+        return self.type.movement
 
     def is_property(self):
         if self.country >= 0:
@@ -133,13 +118,33 @@ class Terrain():
             return 16
         return -1 # Just a terrain tile, no country
 
+
+    def __repr__(self):
+        x_str = str(self.x)
+        if len(x_str) == 1:
+            x_str += ' '
+        y_str = str(self.y)
+        if len(y_str) == 1:
+            y_str += ' '
+        type_str = str(self.type)
+        for i in range(8-len(type_str)):
+            type_str += ' '
+        cpt_string = str(self.capture_points)
+        if len(cpt_string) == 1:
+            cpt_string += ' '
+        country_string = str(self.country)
+        for i in range(2-(len(country_string))):
+            country_string += ' '
+        return '{} {} {} p: {}, c: {}'.format(x_str, y_str, type_str,
+                                              country_string, cpt_string)
+
 class Plain(Terrain):
     def __init__(self):
         self.defense = 1
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 0
 
@@ -150,9 +155,9 @@ class Mountain(Terrain):
     def __init__(self):
         self.defense = 4
         self.movement = {
-            Weather.Clear : [2 ,1 ,0 ,0 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [2 ,1 ,0 ,0 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [4 ,2 ,0 ,0 ,2 ,0 ,0 ,0]
+            Weather.Clear : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [4 ,2 ,100 ,100 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 1
 
@@ -163,9 +168,9 @@ class Wood(Terrain):
     def __init__(self):
         self.defense = 2
         self.movement = {
-            Weather.Clear : [1 ,1 ,2 ,3 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,3 ,4 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,2 ,3 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,3 ,4 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 2
 
@@ -176,9 +181,9 @@ class River(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [2 ,1 ,0 ,0 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [2 ,1 ,0 ,0 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [2 ,1 ,0 ,0 ,2 ,0 ,0 ,0]
+            Weather.Clear : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [2 ,1 ,100 ,100 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 3
 
@@ -189,9 +194,9 @@ class Road(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 4
 
@@ -202,9 +207,9 @@ class Bridge(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 5
 
@@ -215,9 +220,9 @@ class Sea(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [0 ,0 ,0 ,0 ,1 ,1 ,1 ,0],
-            Weather.Rain  : [0 ,0 ,0 ,0 ,1 ,1 ,1 ,0],
-            Weather.Snow  : [0 ,0 ,0 ,0 ,2 ,2 ,2 ,0]
+            Weather.Clear : [0 ,100 ,100 ,100 ,1 ,1 ,1 ,100],
+            Weather.Rain  : [0 ,100 ,100 ,100 ,1 ,1 ,1 ,100],
+            Weather.Snow  : [0 ,100 ,100 ,100 ,2 ,2 ,2 ,100]
         }
         self.encode_idx = 6
 
@@ -228,9 +233,9 @@ class Shoal(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,1 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,1 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,1 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,1 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,1 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,1 ,100]
         }
         self.encode_idx = 7
 
@@ -241,9 +246,9 @@ class Reef(Terrain):
     def __init__(self):
         self.defense = 1
         self.movement = {
-            Weather.Clear : [0 ,0 ,0 ,0 ,1 ,2 ,2 ,0],
-            Weather.Rain  : [0 ,0 ,0 ,0 ,1 ,2 ,2 ,0],
-            Weather.Snow  : [0 ,0 ,0 ,0 ,2 ,2 ,2 ,0]
+            Weather.Clear : [0 ,100 ,100 ,100 ,1 ,2 ,2 ,100],
+            Weather.Rain  : [0 ,100 ,100 ,100 ,1 ,2 ,2 ,100],
+            Weather.Snow  : [0 ,100 ,100 ,100 ,2 ,2 ,2 ,100]
         }
         self.encode_idx = 8
 
@@ -255,9 +260,9 @@ class Pipe(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [0 ,0 ,0 ,0 ,0 ,0 ,0 ,1],
-            Weather.Rain  : [0 ,0 ,0 ,0 ,0 ,0 ,0 ,1],
-            Weather.Snow  : [0 ,0 ,0 ,0 ,0 ,0 ,0 ,1]
+            Weather.Clear : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
+            Weather.Rain  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
+            Weather.Snow  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1]
         }
         self.encode_idx = 9
 
@@ -268,9 +273,9 @@ class Pipeseam(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [0 ,0 ,0 ,0 ,0 ,0 ,0 ,1],
-            Weather.Rain  : [0 ,0 ,0 ,0 ,0 ,0 ,0 ,1],
-            Weather.Snow  : [0 ,0 ,0 ,0 ,0 ,0 ,0 ,1]
+            Weather.Clear : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
+            Weather.Rain  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
+            Weather.Snow  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1]
         }
         self.encode_idx = 10
 
@@ -281,9 +286,9 @@ class Rubble(Terrain):
     def __init__(self):
         self.defense = 1
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 11
 
@@ -294,9 +299,9 @@ class Missile(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 12
 
@@ -307,9 +312,9 @@ class City(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 13
 
@@ -320,9 +325,9 @@ class Base(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,1],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,1],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,1]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,1],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,1],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,1]
         }
         self.encode_idx = 14
 
@@ -333,9 +338,9 @@ class Airport(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 15
 
@@ -346,9 +351,9 @@ class Port(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,2 ,2 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,2 ,2 ,100]
         }
         self.encode_idx = 16
 
@@ -359,9 +364,9 @@ class HQ(Terrain):
     def __init__(self):
         self.defense = 4
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 17
 
@@ -372,9 +377,9 @@ class Comtower(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 18
 
@@ -385,9 +390,9 @@ class Lab(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,0 ,0 ,0],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,0 ,0 ,0]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
         }
         self.encode_idx = 19
 

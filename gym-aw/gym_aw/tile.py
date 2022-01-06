@@ -14,3 +14,6 @@ class Tile():
 
     def __repr__(self):
         return '{} {}'.format(str(self.terrain), str(self.unit))
+
+    def __lt__(self, other):
+        return self.x <= other.x
