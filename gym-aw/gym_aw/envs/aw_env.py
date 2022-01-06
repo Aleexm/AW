@@ -90,7 +90,8 @@ class AwEnv(gym.Env):
             for dy in range(-unit.movement, unit.movement+1):
                 if abs(dx) + abs(dy) > unit.movement:
                     continue # Loop over grid of size 2*movement: Too far
-                if x+dx >= len(self.battlefield) or y+dy >= len(self.battlefield[0]):
+                if x+dx >= len(self.battlefield) or y+dy >= len(self.battlefield[0]) \
+                or x+dx < 0 or y + dy < 0:
                     continue # Out of bounds
                 goal = self.battlefield[x+dx][y+dy]
                 if goal in reachable_squares:

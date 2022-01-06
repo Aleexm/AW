@@ -46,6 +46,7 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
 
         for (add_x, add_y) in [(-1, 0), (0,1), (1,0), (0,-1)]: # NESW neighbor
             if current.x + add_x >= len(battlefield) \
+            or current.x + add_x < 0 or current.y + add_y < 0 \
             or current.y + add_y >= len(battlefield[0]):
                 continue # Neighbor outside of map
             neighbor = battlefield[current.x + add_x][current.y + add_y] # Tile
