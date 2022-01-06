@@ -93,7 +93,7 @@ class AwEnv(gym.Env):
                 if x+dx >= len(self.battlefield) or y+dy >= len(self.battlefield[0]):
                     continue # Out of bounds
                 goal = self.battlefield[x+dx][y+dy]
-                if goal in reachable_squares
+                if goal in reachable_squares:
                     continue # We've already traveled this tile to a further goal
                 path, _ = a_star(start, goal, self.battlefield,
                                  self.active_player, unit, self.weather,

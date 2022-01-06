@@ -12,11 +12,11 @@ import gym
 from gym_aw.envs.aw_env import AwEnv
 from encode_state import *
 from a_star import *
-from enums import Weather
+from enums import *
 
 env = AwEnv('spann_island')
 # inf1 = Infantry(1,0,0)
-inf2 = Infantry(1,5,3)
+inf = Infantry(1,5,3)
 # tank = Tank(2,0,0)
 # recon = Recon(country=0, x=5,y=3)
 # env.create_unit(inf1, inf1.x, inf1.y)
@@ -29,7 +29,9 @@ inf2 = Infantry(1,5,3)
 # state = encode_state(env)
 # print(env.get_valid_actions())
 
-movable_squares = env.get_reachable_squares(inf2)
+# inf.movement = 7
+# inf.movetype = Movetype.Air
+movable_squares = env.get_reachable_squares(inf)
 move_field = np.zeros(np.shape(env.battlefield))
 for sq in movable_squares:
     move_field[sq.x,sq.y] = 1
