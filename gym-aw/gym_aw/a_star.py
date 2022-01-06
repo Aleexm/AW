@@ -1,5 +1,5 @@
 import heapq
-
+from consts import *
 
 def a_star(start, goal, battlefield, active_player, unit, weather, movement):
     '''
@@ -19,6 +19,9 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
         - None: No path found within movement range from start to goal
         - Path(list(Tile)): The shortest path
     '''
+    if traverse_tile_cost(goal, active_player, weather, unit) == MAX_TERRAIN_MOVE:
+        return None, None
+
     # Only used for checking whether neighbor is still in the open_set.
     open_tiles = set()
     open_tiles.add(start)
@@ -36,7 +39,8 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
         current = heapq.heappop(open_set)[1] # [1] gives the Tile (not the f_score)
         open_tiles.remove(current)
         if current.x == goal.x and current.y == goal.y:
-            return reconstruct_path(came_from, current, movement)
+            return reconstruct_path(came_from, current, movement, active_player,
+                                    weather, unit)
         if g_score[current] >= movement: # This square is unreachable
             continue
 
@@ -45,7 +49,7 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
             or current.y + add_y >= len(battlefield[0]):
                 continue # Neighbor outside of map
             neighbor = battlefield[current.x + add_x][current.y + add_y] # Tile
-            d_neighbor = get_distance_to_neighbor(neighbor, active_player, weather, unit)
+            d_neighbor = traverse_tile_cost(neighbor, active_player, weather, unit)
             tentative_g_score = g_score[current] + d_neighbor
             if neighbor_has_better_g_score(tentative_g_score, g_score, neighbor):
                 came_from[neighbor] = current
@@ -55,22 +59,25 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
                     heapq.heappush(open_set, (f_score[neighbor], neighbor))
                     open_tiles.add(neighbor)
 
-    return None
+    return None, None
 
-def reconstruct_path(came_from, current, movement):
-    "Some wikipedia pseudocode magic"
+def reconstruct_path(came_from, current, movement, active_player, weather, unit):
+    "Some wikipedia pseudocode magic. Returns both the path and the distance"
     total_path = [current]
     while current in came_from.keys():
         current = came_from[current]
         total_path.append(current)
     list.reverse(total_path)
-    return total_path
+    total_cost = 0
+    for t in total_path[1:]:
+        total_cost += traverse_tile_cost(t, active_player, weather, unit)
+    return total_path, total_cost
 
 
-def get_distance_to_neighbor(neighbor, active_player, weather, unit):
+def traverse_tile_cost(neighbor, active_player, weather, unit):
     "Returns distance based on unit's movement type, as well as the weather"
     if neighbor.unit is not None and neighbor.unit.country != active_player:
-        return 100 # Enemy unit is blocking
+        return MAX_TERRAIN_MOVE # Enemy unit is blocking
     return neighbor.terrain.movement[weather][unit.movetype.value]
 
 def manhattan(a, b):

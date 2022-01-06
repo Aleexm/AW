@@ -16,9 +16,9 @@ from enums import Weather
 
 env = AwEnv('spann_island')
 # inf1 = Infantry(1,0,0)
-# inf2 = Infantry(2,1,1)
+inf2 = Infantry(1,5,3)
 # tank = Tank(2,0,0)
-recon = Recon(country=0, x=5,y=3)
+# recon = Recon(country=0, x=5,y=3)
 # env.create_unit(inf1, inf1.x, inf1.y)
 # env.create_unit(inf2, inf2.x, inf2.y)
 # env.battlefield[inf1.x][inf1.y].unit = inf1
@@ -29,16 +29,8 @@ recon = Recon(country=0, x=5,y=3)
 # state = encode_state(env)
 # print(env.get_valid_actions())
 
-path = a_star(env.battlefield[5][3], env.battlefield[5][8], env.battlefield,
-              env.active_player, recon, Weather.Clear, 13)
-
-for p in path:
-    print(p)
-
-
-
-
-# numpy.set_printoptions(threshold=sys.maxsize)
-# for i in range(59,84):
-#     print('=================== {} =================='.format(i))
-#     print(state[i,:,:])
+movable_squares = env.get_reachable_squares(inf2)
+move_field = np.zeros(np.shape(env.battlefield))
+for sq in movable_squares:
+    move_field[sq.x,sq.y] = 1
+print(move_field)

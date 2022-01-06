@@ -69,7 +69,7 @@ class Terrain():
             return Comtower()
         if self.id in [138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 154, 161, 168, 175, 186, 193]:
             return Lab()
-        if self.id in [42, 47, 52, 57, 85, 90, 95, 100, 120, 125, 153, 160, 167, 174, 185, 192]:
+        if self.id in [42, 47, 52, 57, 85, 90, 95, MAX_TERRAIN_MOVE, 120, 125, 153, 160, 167, 174, 185, 192]:
             return HQ()
         if self.id in list(range(101, 111)):
             return Pipe()
@@ -98,7 +98,7 @@ class Terrain():
             return 6
         if self.id in [86,87,88,89,90,137,143]:
             return 7
-        if self.id in [96,97,98,99,100,130,141]:
+        if self.id in [96,97,98,99,MAX_TERRAIN_MOVE,130,141]:
             return 8
         if self.id in [117,118,119,120,121,127,138]:
             return 9
@@ -142,9 +142,9 @@ class Plain(Terrain):
     def __init__(self):
         self.defense = 1
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 0
 
@@ -155,9 +155,9 @@ class Mountain(Terrain):
     def __init__(self):
         self.defense = 4
         self.movement = {
-            Weather.Clear : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [4 ,2 ,100 ,100 ,2 ,100 ,100 ,100]
+            Weather.Clear : [2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [4 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 1
 
@@ -168,9 +168,9 @@ class Wood(Terrain):
     def __init__(self):
         self.defense = 2
         self.movement = {
-            Weather.Clear : [1 ,1 ,2 ,3 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,3 ,4 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,2 ,3 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,3 ,4 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 2
 
@@ -181,9 +181,9 @@ class River(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [2 ,1 ,100 ,100 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [2 ,1 ,100 ,100 ,2 ,100 ,100 ,100]
+            Weather.Clear : [2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 3
 
@@ -194,9 +194,9 @@ class Road(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 4
 
@@ -207,9 +207,9 @@ class Bridge(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 5
 
@@ -220,9 +220,9 @@ class Sea(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [0 ,100 ,100 ,100 ,1 ,1 ,1 ,100],
-            Weather.Rain  : [0 ,100 ,100 ,100 ,1 ,1 ,1 ,100],
-            Weather.Snow  : [0 ,100 ,100 ,100 ,2 ,2 ,2 ,100]
+            Weather.Clear : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,1 ,1 ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,1 ,1 ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,2 ,2 ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 6
 
@@ -233,9 +233,9 @@ class Shoal(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,1 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,1 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,1 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,1 ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 7
 
@@ -246,9 +246,9 @@ class Reef(Terrain):
     def __init__(self):
         self.defense = 1
         self.movement = {
-            Weather.Clear : [0 ,100 ,100 ,100 ,1 ,2 ,2 ,100],
-            Weather.Rain  : [0 ,100 ,100 ,100 ,1 ,2 ,2 ,100],
-            Weather.Snow  : [0 ,100 ,100 ,100 ,2 ,2 ,2 ,100]
+            Weather.Clear : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,2 ,2 ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1 ,2 ,2 ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,2 ,2 ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 8
 
@@ -260,9 +260,9 @@ class Pipe(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
-            Weather.Rain  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
-            Weather.Snow  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1]
+            Weather.Clear : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1],
+            Weather.Rain  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1],
+            Weather.Snow  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1]
         }
         self.encode_idx = 9
 
@@ -273,9 +273,9 @@ class Pipeseam(Terrain):
     def __init__(self):
         self.defense = 0
         self.movement = {
-            Weather.Clear : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
-            Weather.Rain  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1],
-            Weather.Snow  : [0 ,100 ,100 ,100 ,100 ,100 ,100 ,1]
+            Weather.Clear : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1],
+            Weather.Rain  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1],
+            Weather.Snow  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1]
         }
         self.encode_idx = 10
 
@@ -286,9 +286,9 @@ class Rubble(Terrain):
     def __init__(self):
         self.defense = 1
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,2 ,3 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [2 ,1 ,2 ,3 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 11
 
@@ -299,9 +299,9 @@ class Missile(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 12
 
@@ -312,9 +312,9 @@ class City(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 13
 
@@ -325,9 +325,9 @@ class Base(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,1],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,1],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,1]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,1]
         }
         self.encode_idx = 14
 
@@ -338,9 +338,9 @@ class Airport(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 15
 
@@ -351,9 +351,9 @@ class Port(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,2 ,2 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,2 ,2 ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 16
 
@@ -364,9 +364,9 @@ class HQ(Terrain):
     def __init__(self):
         self.defense = 4
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 17
 
@@ -377,9 +377,9 @@ class Comtower(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 18
 
@@ -390,9 +390,9 @@ class Lab(Terrain):
     def __init__(self):
         self.defense = 3
         self.movement = {
-            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,100 ,100 ,100],
-            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,100 ,100 ,100]
+            Weather.Clear : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Rain  : [1 ,1 ,1 ,1 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE],
+            Weather.Snow  : [1 ,1 ,1 ,1 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 19
 

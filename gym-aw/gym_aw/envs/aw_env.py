@@ -5,6 +5,8 @@ from gym_aw.create_map import *
 from gym_aw.tile import Tile
 from gym_aw.unit import *
 from gym_aw.terrain import *
+from a_star import a_star, traverse_tile_cost
+from enums import *
 
 class AwEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -24,6 +26,7 @@ class AwEnv(gym.Env):
         self.countries = get_1v1_map_countries(terrain)
         self.active_player = self.countries[0]
         self.initial_player = self.active_player
+        self.weather = Weather.Clear
 
     def step(self, action):
         pass
@@ -53,9 +56,9 @@ class AwEnv(gym.Env):
         16. Use SCop
         17. Yield
         '''
-        return self._get_actionable_units()
+        return self.get_actionable_units()
 
-    def _get_actionable_units(self):
+    def get_actionable_units(self):
         actionable = np.zeros(np.shape(self.battlefield))
         for row in range(len(self.battlefield)):
             for col in range(len(self.battlefield[row])):
@@ -68,8 +71,40 @@ class AwEnv(gym.Env):
                         actionable[row,col] = 1
         return actionable
 
-    def _get_movable_squares(self):
-        pass
+    def get_reachable_squares(self, unit):
+        '''
+        For a specific unit, get all reachable squares, taking into account
+        its movement, the weather and TODO: (s)COP.
+
+        Args:
+            - unit(Unit): The unit that is selected
+
+        Returns:
+            - reachable_squares(List(Tile)): the reachable squares
+        '''
+        x, y = unit.x, unit.y
+        start = self.battlefield[x][y]
+        reachable_squares = set()
+        reachable_squares.add(start)
+        for dx in range(-unit.movement, unit.movement+1):
+            for dy in range(-unit.movement, unit.movement+1):
+                if abs(dx) + abs(dy) > unit.movement:
+                    continue # Loop over grid of size 2*movement: Too far
+                if x+dx >= len(self.battlefield) or y+dy >= len(self.battlefield[0]):
+                    continue # Out of bounds
+                goal = self.battlefield[x+dx][y+dy]
+                if goal in reachable_squares
+                    continue # We've already traveled this tile to a further goal
+                path, _ = a_star(start, goal, self.battlefield,
+                                 self.active_player, unit, self.weather,
+                                 unit.movement) # _ because distance isn't used
+                if path is None:
+                    continue # Tile is unreachable
+                else:
+                    for p in path[1:]: # Start tile is already reachable
+                        if p not in reachable_squares:
+                            reachable_squares.add(p)
+        return reachable_squares
 
     def create_unit(self, unit, x, y):
         self.battlefield[x][y].unit = unit
