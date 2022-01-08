@@ -2,6 +2,7 @@ import heapq
 from consts import *
 
 def a_star(start, goal, battlefield, active_player, unit, weather, movement):
+    "TODO: JOIN UNITS"
     '''
     Finds the shortest path between start and goal. If this distance is longer
     than the maximum movement of the unit, return None.
@@ -20,6 +21,8 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
         - Path(list(Tile)): The shortest path
     '''
     if traverse_tile_cost(goal, active_player, weather, unit) == MAX_TERRAIN_MOVE:
+        return None, None
+    if goal.unit is not None and goal.unit.country == active_player: # TODO: JOINs
         return None, None
 
     # Only used for checking whether neighbor is still in the open_set.
