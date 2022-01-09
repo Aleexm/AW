@@ -16,6 +16,11 @@ class Unit():
         self.has_moved = False
         self.has_finished = False
 
+    def unready(self):
+        self.is_selected = False
+        self.has_moved = True
+        self.has_finished = True
+
     def __repr__(self):
         return '{} x{} y{}'.format(type(self), self.x, self.y)
 
@@ -36,13 +41,11 @@ class Infantry(Unit):
         self.vision = 2
         self.cost = 1000
 
-    # def __repr__(self):
-    #     return super().__repr__(self)
-
 class Tank(Unit):
     "TODO FIX ENCODE IDX"
     def __init__(self, country, x, y):
         super().__init__(country)
+        self.type = UnitType.Tank
         self.fuel = 70
         self.upkeep_fuel = 0
         self.ammo = 9
@@ -60,6 +63,7 @@ class Recon(Unit):
     "TODO FIX ENCODE IDX"
     def __init__(self, country, x, y):
         super().__init__(country)
+        self.type = UnitType.Recon
         self.fuel = 80
         self.upkeep_fuel = 0
         self.ammo = 100
@@ -72,6 +76,3 @@ class Recon(Unit):
         self.max_range = 1
         self.vision = 5
         self.cost = 4000
-
-    def __repr__(self):
-        return '{} {} Infantry: {}HP {}Fuel {}Ammo'.format(str(self.x), str(self.y), self.hp, self.fuel, self.ammo)

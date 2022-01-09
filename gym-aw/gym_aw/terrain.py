@@ -116,16 +116,16 @@ class Terrain():
         y_str = str(self.y)
         if len(y_str) == 1:
             y_str += ' '
-        type_str = str(self.type)
-        for i in range(8-len(type_str)):
-            type_str += ' '
+        # type_str = self
+        # for i in range(8-len(type_str)):
+        #     type_str += ' '
         cpt_string = str(self.capture_points)
         if len(cpt_string) == 1:
             cpt_string += ' '
         country_string = str(self.country)
         for i in range(2-(len(country_string))):
             country_string += ' '
-        return '{} {} {} p: {}, c: {}'.format(x_str, y_str, type_str,
+        return '{} {} {} p: {}, c: {}'.format(x_str, y_str, 'TODOO',
                                               country_string, cpt_string)
 
 class Plain(Terrain):
@@ -139,9 +139,6 @@ class Plain(Terrain):
         }
         self.encode_idx = 0
 
-    def __repr__(self):
-        return 'plain'
-
 class Mountain(Terrain):
     def __init__(self, x, y, country):
         super().__init__(x, y, country)
@@ -152,9 +149,6 @@ class Mountain(Terrain):
             Weather.Snow  : [4 ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 1
-
-    def __repr__(self):
-        return 'Mountain'
 
 class Wood(Terrain):
     def __init__(self, x, y, country):
@@ -167,9 +161,6 @@ class Wood(Terrain):
         }
         self.encode_idx = 2
 
-    def __repr__(self):
-        return 'Wood'
-
 class River(Terrain):
     def __init__(self, x, y, country):
         super().__init__(x, y, country)
@@ -180,9 +171,6 @@ class River(Terrain):
             Weather.Snow  : [2 ,1 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 3
-
-    def __repr__(self):
-        return 'River'
 
 class Road(Terrain):
     def __init__(self, x, y, country):
@@ -195,9 +183,6 @@ class Road(Terrain):
         }
         self.encode_idx = 4
 
-    def __repr__(self):
-        return 'Road'
-
 class Bridge(Terrain):
     def __init__(self, x, y, country):
         super().__init__(x, y, country)
@@ -209,9 +194,6 @@ class Bridge(Terrain):
         }
         self.encode_idx = 5
 
-    def __repr__(self):
-        return 'Bridge'
-
 class Sea(Terrain):
     def __init__(self, x, y, country):
         super().__init__(x, y, country)
@@ -222,9 +204,6 @@ class Sea(Terrain):
             Weather.Snow  : [MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,MAX_TERRAIN_MOVE ,2 ,2 ,2 ,MAX_TERRAIN_MOVE]
         }
         self.encode_idx = 6
-
-    def __repr__(self):
-        return 'Sea'
 
 class Shoal(Terrain):
     def __init__(self, x, y, country):

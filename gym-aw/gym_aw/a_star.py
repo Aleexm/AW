@@ -1,5 +1,7 @@
 import heapq
 from consts import *
+# from enums import *
+from terrain import Mountain
 
 def a_star(start, goal, battlefield, active_player, unit, weather, movement):
     "TODO: JOIN UNITS"
@@ -44,8 +46,8 @@ def a_star(start, goal, battlefield, active_player, unit, weather, movement):
         if current.x == goal.x and current.y == goal.y:
             return reconstruct_path(came_from, current, movement, active_player,
                                     weather, unit)
-        if g_score[current] >= movement: # This square is unreachable
-            continue
+        # if g_score[current] >= movement: # This square is unreachable
+        #     continue
 
         for (add_x, add_y) in [(-1, 0), (0,1), (1,0), (0,-1)]: # NESW neighbor
             if current.x + add_x >= len(battlefield) \
@@ -75,7 +77,10 @@ def reconstruct_path(came_from, current, movement, active_player, weather, unit)
     total_cost = 0
     for t in total_path[1:]:
         total_cost += traverse_tile_cost(t, active_player, weather, unit)
-    return total_path, total_cost
+    if total_cost <= movement:
+        return total_path, total_cost
+    else:
+        return None, None
 
 
 def traverse_tile_cost(neighbor, active_player, weather, unit):

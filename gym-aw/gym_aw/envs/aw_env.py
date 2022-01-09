@@ -7,6 +7,7 @@ from gym_aw.unit import *
 from gym_aw.terrain import Terrain
 from gym_aw.a_star import a_star, traverse_tile_cost
 from gym_aw.enums import *
+from gym_aw.encode_state import *
 from copy import copy
 import math
 
@@ -29,9 +30,34 @@ class AwEnv(gym.Env):
         self.active_player = self.countries[0]
         self.initial_player = self.active_player
         self.weather = Weather.Clear
+        self.selected_unit = None
+        self.selected_unit_moved = False
 
     def step(self, action):
-        pass
+        self.handle_action(action)
+        done = self.check_done()
+        if self.check_turn_done():
+            self.end_turn()
+        return done
+
+    def handle_action(self, action):
+        window_size = MAX_X * MAX_Y
+        window_idx = action // window_size # 0 = select, 1 = move, 2 = attack
+        inside_window_idx = action % window_size
+        if window_idx == 0: # Select a unit
+            selected_unit = self.battlefield[inside_window_idx // MAX_X][inside_window_idx % MAX_X].unit
+            self.select_unit(selected_unit)
+        elif window_idx == 1: # Move selected unit
+            new_tile = self.battlefield[inside_window_idx // MAX_X][inside_window_idx % MAX_X]
+            self.move_unit(self.selected_unit, new_tile.x, new_tile.y)
+        elif window_idx == 2:
+            attacker_tile = self.battlefield[self.selected_unit.x][self.selected_unit.y]
+            defender_tile = self.battlefield[inside_window_idx // MAX_X][inside_window_idx % MAX_X]
+            self.attack_unit(attacker_tile, defender_tile)
+        else:
+            self.unready_unit(self.selected_unit)
+
+
     def reset(self):
         pass
     def render(self, mode='human', close=False):
@@ -58,10 +84,25 @@ class AwEnv(gym.Env):
         16. Use SCop
         17. Yield
         '''
-        return self.idtionable_units()
+        valid_actions = np.zeros([4, MAX_X, MAX_Y]) # TODO Will not be rect?
+        if self.selected_unit is None:
+            actionable_units = self.get_actionable_units()
+            valid_actions[0] = actionable_units
+        if self.selected_unit is not None and not self.selected_unit.has_moved:
+            reachable_squares = self.get_reachable_squares()
+            encoded_reachable_squares = encode_set_of_tiles(self,
+                                                            reachable_squares)
+            valid_actions[1] = encoded_reachable_squares
+        if self.selected_unit is not None and self.selected_unit.has_moved:
+            attackable_squares = self.get_attackable_squares()
+            encoded_attackable_squares = encode_set_of_tiles(self,
+                                                             attackable_squares)
+            valid_actions[2] = encoded_attackable_squares
+            valid_actions[3,0,0] = 1 # Temporary wait action at 1st index of 3rd window
+        return valid_actions
 
     def get_actionable_units(self):
-        actionable = np.zeros(np.shape(self.battlefield))
+        actionable = np.zeros([MAX_X, MAX_Y])
         for row in range(len(self.battlefield)):
             for col in range(len(self.battlefield[row])):
                 unit = self.battlefield[row][col].unit
@@ -73,19 +114,17 @@ class AwEnv(gym.Env):
                         actionable[row,col] = 1
         return actionable
 
-    def get_reachable_squares(self, unit):
+    def get_reachable_squares(self):
         "TODO: FIX JOIN"
         '''
         For a specific unit, get all reachable squares, taking into account
         its movement, the weather and TODO: (s)COP.
 
-        Args:
-            - unit(Unit): The unit that is selected
-
         Returns:
             - reachable_squares(List(Tile)): the reachable squares
         '''
-        assert not unit.has_moved
+        unit = self.selected_unit
+        assert not unit.has_moved and unit.is_selected
         x, y = unit.x, unit.y
         start = self.battlefield[x][y]
         reachable_squares = set()
@@ -113,9 +152,18 @@ class AwEnv(gym.Env):
                             reachable_squares.add(p)
         return reachable_squares
 
-    def get_attackable_squares(self, unit):
-        "TODO: Still returns tiles containing no units"
+    def get_attackable_squares(self):
+        '''
+        For this unit, get all attackable squares, taking into account its
+        minimum and maximum range, as well as (s)COp boosts.
+        Does not return empty tiles.
+
+        Returns:
+            - attackable_squares(set): each Tile that is attackable by
+                                       self.selected_unit
+        '''
         attackable_squares = set()
+        unit = self.selected_unit
         x, y = unit.x, unit.y
         for dx in range(-unit.max_range, unit.max_range+1):
             for dy in range(-unit.max_range, unit.max_range+1):
@@ -136,18 +184,74 @@ class AwEnv(gym.Env):
                 attackable_squares.add(self.battlefield[x+dx][y+dy])
         return attackable_squares
 
+    def attack_unit(self, attacker_tile, defender_tile):
+        "TODO: prev_a_health prev_d_health used for logging only."
+        attacker = attacker_tile.unit
+        defender = defender_tile.unit
+        prev_a_health = copy(attacker.visible_hp)
+        prev_d_health = copy(defender.visible_hp)
+        attack_damage = self.damage_formula(attacker, defender, defender_tile.terrain)
+        defender.hp = max(0, round(defender.hp - attack_damage, 1))
+        defender.visible_hp = math.ceil(defender.hp/10)
+        if defender.hp == 0:
+            self.defender_died(defender_tile)
+            print("=== {}({}) killed {}".format(attacker, prev_a_health, defender))
+        else:
+            defense_damage = self.damage_formula(defender, attacker, attacker_tile.terrain)
+            attacker.hp = max(0, round(attacker.hp - defense_damage, 1))
+            attacker.visible_hp = math.ceil(attacker.hp/10)
+            if attacker.hp == 0:
+                self.attacker_died(attacker_tile)
+                print("=== {} killed itself".format(attacker))
+                return
+            # print("=== {}({}) attacked {}({}) for {} vs {}".format(attacker, prev_a_health, defender, prev_d_health, round(attack_damage/10, 2), round(defense_damage/10, 2)))
+        if attacker_tile.unit is not None: # Survived
+            self.unready_unit(attacker_tile.unit)
+
+    def damage_formula(self, attacker, defender, defender_terrain):
+        first_term = (DAMAGE_CHART[attacker.type.value, defender.type.value] * 100) / 100 + random.randrange(0,10)
+        second_term = attacker.visible_hp / 10
+        third_term = (200 - (100 + defender_terrain.defense * defender.visible_hp)) / 100
+        return first_term * second_term * third_term
 
     def create_unit(self, unit):
+        assert self.battlefield[unit.x][unit.y].unit is None
         self.battlefield[unit.x][unit.y].unit = unit
 
+    def attacker_died(self, tile):
+        self.unselect_unit(tile.unit)
+        tile.unit = None
+
+    def defender_died(self, tile):
+        tile.unit = None
+
     def select_unit(self, unit):
+        assert self.selected_unit is None
         unit.is_selected = True
+        self.selected_unit = unit
+        # print("Selected {}".format(self.selected_unit))
+
+    def unselect_unit(self, unit):
+        assert self.selected_unit is not None
+        unit.is_selected = False
+        self.selected_unit = None
+        self.selected_unit_moved = False
 
     def move_unit(self, unit, new_x, new_y):
+        assert self.selected_unit is not None
         self.battlefield[unit.x][unit.y].unit = None
         self.battlefield[new_x][new_y].unit = unit
+        old_x, old_y = unit.x, unit.y
         unit.x, unit.y = new_x, new_y
         unit.has_moved = True
+        self.unit_moved = True
+        # print("Moved {} from {} to {}".format(unit, (old_x, old_y), (new_x, new_y)))
+
+    def unready_unit(self, unit):
+        unit.unready()
+        self.selected_unit = None
+        self.selected_unit_moved = False
+        # print("Finished handling ", unit)
 
     def end_turn(self):
         new_country = self.get_new_country()
@@ -155,7 +259,10 @@ class AwEnv(gym.Env):
         self.start_turn()
 
     def start_turn(self):
+        # print("========== NEW TURN: ", self.active_player, " =============")
         self.ready_country_units(self.active_player)
+        self.selected_unit = None
+        self.selected_unit_moved = False
 
     def get_new_country(self):
         new_country_idx = (self.countries.index(self.active_player) + 1) \
@@ -170,6 +277,17 @@ class AwEnv(gym.Env):
                 if unit is None or unit.country != country:
                     continue
                 unit.ready()
+
+    def check_turn_done(self):
+        "TODO: bases, (s)COp etc"
+        for row in range(len(self.battlefield)):
+            for col in range(len(self.battlefield[row])):
+                tile = self.battlefield[row][col]
+                if tile.unit is None:
+                    continue
+                if tile.unit.country == self.active_player and not tile.unit.has_finished:
+                    return False
+        return True
 
     def check_done(self):
         winner = self.check_unit_victory()
@@ -190,30 +308,6 @@ class AwEnv(gym.Env):
         if len(found_hqs) < 2:
             return found_hqs[0]
         return None
-
-    def attack_unit(self, attacker_tile, defender_tile):
-        "TODO: prev_a_health prev_d_health used for logging only."
-        attacker = attacker_tile.unit
-        defender = defender_tile.unit
-        prev_a_health = copy(attacker.visible_hp)
-        prev_d_health = copy(defender.visible_hp)
-        attack_damage = self.damage_formula(attacker, defender, defender_tile.terrain)
-        defender.hp = max(0, round(defender.hp - attack_damage, 1))
-        defender.visible_hp = math.ceil(defender.hp/10)
-        if defender.hp == 0:
-            self.battlefield[defender_tile.x][defender_tile.y].unit = None
-            print("=== {}({}) killed {}".format(attacker, prev_a_health, defender))
-        else:
-            defense_damage = self.damage_formula(defender, attacker, attacker_tile.terrain)
-            attacker.hp = max(0, round(attacker.hp - defense_damage, 1))
-            attacker.visible_hp = math.ceil(attacker.hp/10)
-            print("=== {}({}) attacked {}({}) for {} vs {}".format(attacker, prev_a_health, defender, prev_d_health, round(attack_damage/10, 2), round(defense_damage/10, 2)))
-
-    def damage_formula(self, attacker, defender, defender_terrain):
-        first_term = (DAMAGE_CHART[attacker.type.value, defender.type.value] * 100) / 100 + random.randrange(0,10)
-        second_term = attacker.visible_hp / 10
-        third_term = (200 - (100 + defender_terrain.defense * defender.visible_hp)) / 100
-        return first_term * second_term * third_term
 
     def check_unit_victory(self):
         found_countries = list()

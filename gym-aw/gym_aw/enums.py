@@ -38,6 +38,7 @@ class TerrainType(enum.Enum):
     Lab      = 19
 
 class Country(enum.Enum):
+    NoCountry       = -1
     Neutral         = 0
     OrangeStar      = 1
     BlueMoon        = 2
@@ -55,7 +56,6 @@ class Country(enum.Enum):
     PurpleLightning = 14
     AcidRain        = 15
     WhiteNova       = 16
-    NoCountry       = -1
 
 class UnitType(enum.Enum):
     AntiAir         = 0

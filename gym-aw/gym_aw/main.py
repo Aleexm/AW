@@ -15,22 +15,26 @@ from a_star import *
 from enums import *
 from random_agent import RandomAgent
 
-env = AwEnv('simple_2_inf')
+
+for i in range(1000):
+    if i%100 ==0:
+        print(i)
 
 
-agent_1 = RandomAgent(1)
-agent_2 = RandomAgent(2)
-agents = [agent_1, agent_2]
-infs = [Infantry(Country.GreenEarth,2,1),
-        Infantry(Country.YellowComet,2,2)]
-for inf in infs:
-    env.create_unit(inf)
-while not env.check_done():
-# for i in range(100):
-    print(" >> AGENT {}".format(env.active_player))
-    agents[env.countries.index(env.active_player)].act(env)
-    env.end_turn()
-print('============= GAME CONCLUDED =============')
+    env = AwEnv('simple_2_inf')
+    agent_1 = RandomAgent(1)
+    agent_2 = RandomAgent(2)
+    agents = [agent_1, agent_2]
+    infs = [Recon(Country.GreenEarth,2,1),
+            Infantry(Country.GreenEarth,2,0),
+            Tank(Country.YellowComet,2,3)]
+    for inf in infs:
+        env.create_unit(inf)
+    done = False
+    while not done:
+        a = agents[env.countries.index(env.active_player)].act(env)
+        done = env.step(a)
+    print('============= GAME CONCLUDED =============')
 #
 # inf1 = Infantry(1,0,0)
 # tank = Tank(2,0,0)
