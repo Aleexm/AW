@@ -1,5 +1,0 @@
-cloudpickle==2.0.0
-gym==0.21.0
-# Editable install with no version control (gym-aw==0.0.1)
--e c:\users\alexm\.aaprojects\aw\gym-aw
-numpy==1.22.0
